@@ -1,0 +1,58 @@
+<head>
+<meta charset="UTF-8">
+<script src="raphael-min.js"></script>
+<script src="underscore-min.js"></script>
+<script src="sequence-diagram-min.js"></script>
+</head>
+<textarea id="markuptext" rows=20 cols=50>
+@Home as H
+@Desk as D
+@Dir as P
+@Boss as B
+@Cafe as C
+H->H:breakfast
+H->D:bike
+|C->C:open
+D->[P:mkdir
+B-->>P:copy ticket
+|D->H:forget money
+Note left of B:lengthy\nprocess
+|H->D:have money
+D->>C:routine
+C->>C:cup
+C->D:coffee
+frame over D,C:Alt
+C->D:cookies
+frame snip:option1
+C->D:cakes
+frame snip:option2
+D->B:ask for money
+C->D:sandwiches
+frame bottom:option3
+P->D:copied
+|Note right of P:beep alert
+D->H:tired
+</textarea>
+<input type="button" value="show" onClick="drawSeq()">
+<input type="button" value="save" onClick="download()">
+<div id="diagram"></div>
+<script>
+function drawSeq(){
+  document.getElementById("diagram").innerText="";
+  var diagram = Diagram.parse(document.getElementById("markuptext").value);
+  diagram.drawSVG("diagram", {theme: 'simple'});
+}
+function download() {
+  var svg = document.getElementById("diagram").firstChild;
+  var width = parseInt(svg.width.baseVal.value);
+  var height = parseInt(svg.height.baseVal.value);
+  var data = document.getElementById("markuptext").value;
+  var xml = '<?xml version="1.0" encoding="utf-8" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd"><svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '" xmlns:xlink="http://www.w3.org/1999/xlink"><source><![CDATA[' + data + ']]></source>' + svg.innerHTML + '</svg>';
+  xml = xml.replace(/NS\d+:href/g, 'xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href');
+  var a = document.createElement("a");
+  a.download = "diagram.svg"; // TODO I could put title here
+  a.href = "data:image/svg+xml," + encodeURIComponent(xml);
+  a.click();
+}
+</script>
+
