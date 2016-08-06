@@ -27,7 +27,7 @@ jQuery(function ($) {
 	// マウスダウン時
 	function mouseDown(event) {
 		leftDiff = event.pageX - floatbox.offset().left;
-		topDiff = event.pageY - floatbox.offset().top;
+		topDiff = event.pageY - floatbox.offset().top + $(window).scrollTop();
 		doc.on("mousemove", moving)
 			.on("mouseup", dragEnd);
 	}
