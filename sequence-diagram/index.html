@@ -3,8 +3,85 @@
 <script src="raphael-min.js"></script>
 <script src="underscore-min.js"></script>
 <script src="sequence-diagram-min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script type="text/javascript">
+jQuery(function ($) {
+	var leftDiff, topDiff,
+		doc = $(document),
+		floatbox = $("#floatbox"),
+		handle = $("#floatbox .handle");
+
+	// ドラッグ中
+	function moving(event) {
+		floatbox.css("left", (event.pageX - leftDiff) + "px")
+			.css("top", (event.pageY - topDiff) + "px")
+			.css("opacity", 0.7);
+	}
+
+	// ドラッグ終了時
+	function dragEnd() {
+		doc.off("mousemove mouseup");
+		floatbox.css("opacity", 1);
+	}
+
+	// マウスダウン時
+	function mouseDown(event) {
+		leftDiff = event.pageX - floatbox.offset().left;
+		topDiff = event.pageY - floatbox.offset().top;
+		doc.on("mousemove", moving)
+			.on("mouseup", dragEnd);
+	}
+
+	// ハンドル部分に対するイベント設定
+	handle.on("mousedown", mouseDown);
+
+	// フローティングボックス非表示
+	$(".close").on("click", function () {
+		$("#controls").toggle();
+		$(".close").text($("#controls").is(':hidden') ? "▼":"▲");
+	});
+});
+</script>
 </head>
-<textarea id="markuptext" rows=20 cols=50>
+<body>
+<style>
+#floatbox {
+    position: absolute;
+
+    background-color: #F4F9EE;
+    border: 1px solid gray;
+    padding: 0px;
+    width: 400px;
+    top: 0;
+    left: 0;	/* top と left を明示的に示す */
+    z-index: 100000;
+}
+#floatbox .handle {
+    position: relative;
+    background-color: #069;
+    color: white;
+    padding: 10px 5px 10px;
+    cursor: move;
+}
+#floatbox .message {
+    padding: 5px;
+}
+#floatbox .close {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    cursor: pointer;
+}
+</style>
+<div id="floatbox">
+	<div class="handle">
+		Mark Down Editor
+		<div class="close">▲</div>
+	</div>
+	<div class="message">
+		<div id="controls">
+			<textarea id="markuptext" rows=20 cols=50>
+title:daily work
 @Home as H
 @Desk as D
 @Dir as P
@@ -34,17 +111,30 @@ frame bottom:break
 P->D:copied
 |Note right of P:beep alert
 D->H:tired
-</textarea>
-<input type="button" value="show" onClick="drawSeq()">
-<input type="button" value="save" onClick="download()">
+			</textarea>
+			<input type="button" value="show" onClick="drawSeq()">
+			<input type="button" value="save" onClick="download()">
+			<input type="button" value="+" onClick="zoom(true)">
+			<input type="button" value="-" onClick="zoom(false)">
+		</div>
+	</div>
+</div>
 <div id="diagram"></div>
 <script>
+function zoom(inout){
+  var size = $("#diagram").css("zoom") * 1;
+  size += inout ? 0.2:-0.2;
+  $("#diagram").css("zoom",size);
+}
 function drawSeq(){
   document.getElementById("diagram").innerText="";
   var diagram = Diagram.parse(document.getElementById("markuptext").value);
   diagram.drawSVG("diagram", {theme: 'simple'});
 }
 function download() {
+  document.getElementById("markuptext").value.match(/^title:\s*(.+)\n/i);
+  var title = RegExp.$1;
+  title = title == "" ? "untitled":title;
   var svg = document.getElementById("diagram").firstChild;
   var width = parseInt(svg.width.baseVal.value);
   var height = parseInt(svg.height.baseVal.value);
@@ -52,9 +142,10 @@ function download() {
   var xml = '<?xml version="1.0" encoding="utf-8" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd"><svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '" xmlns:xlink="http://www.w3.org/1999/xlink"><source><![CDATA[' + data + ']]></source>' + svg.innerHTML + '</svg>';
   xml = xml.replace(/NS\d+:href/g, 'xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href');
   var a = document.createElement("a");
-  a.download = "diagram.svg"; // TODO I could put title here
+  a.download = title + ".svg";
   a.href = "data:image/svg+xml," + encodeURIComponent(xml);
   a.click();
 }
 </script>
+</body></html>
 
