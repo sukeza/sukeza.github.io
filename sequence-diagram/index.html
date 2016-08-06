@@ -10,6 +10,11 @@
 $(function(){
 	$("#floatbox").draggable({handle:".handle"});
 	$("#diagram").draggable();
+	// フローティングボックス非表示
+	$(".close").on("click", function () {
+			$("#controls").toggle();
+			$(".close").text($("#controls").is(':hidden') ? "▼":"▲");
+});
 });
 </script>
 </head>
@@ -25,7 +30,7 @@ $(function(){
     border: 1px solid gray;
     padding: 0px;
     width: 400px;
-    right: 0;	/* top と left を明示的に示す */
+    right: 5;	/* top と left を明示的に示す */
     z-index: 100000;
 }
 #floatbox .handle {
