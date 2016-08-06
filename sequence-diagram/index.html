@@ -4,47 +4,20 @@
 <script src="underscore-min.js"></script>
 <script src="sequence-diagram-min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
 <script type="text/javascript">
-jQuery(function ($) {
-	var leftDiff, topDiff,
-		doc = $(document),
-		floatbox = $("#floatbox"),
-		handle = $("#floatbox .handle");
-
-	// ドラッグ中
-	function moving(event) {
-		floatbox.css("left", (event.pageX - leftDiff) + "px")
-			.css("top", (event.pageY - topDiff) + "px")
-			.css("opacity", 0.7);
-	}
-
-	// ドラッグ終了時
-	function dragEnd() {
-		doc.off("mousemove mouseup");
-		floatbox.css("opacity", 1);
-	}
-
-	// マウスダウン時
-	function mouseDown(event) {
-		leftDiff = event.pageX - floatbox.offset().left + $(window).scrollLeft();
-		topDiff = event.pageY - floatbox.offset().top + $(window).scrollTop();
-		doc.on("mousemove", moving)
-			.on("mouseup", dragEnd);
-	}
-
-	// ハンドル部分に対するイベント設定
-	handle.on("mousedown", mouseDown);
-
-	// フローティングボックス非表示
-	$(".close").on("click", function () {
-		$("#controls").toggle();
-		$(".close").text($("#controls").is(':hidden') ? "▼":"▲");
-	});
+$(function(){
+	$("#floatbox").draggable({handle:".handle"});
+	$("#diagram").draggable();
 });
 </script>
 </head>
 <body>
 <style>
+#diagram {
+	position: fixed;
+}
 #floatbox {
     position: fixed;
 
@@ -52,8 +25,7 @@ jQuery(function ($) {
     border: 1px solid gray;
     padding: 0px;
     width: 400px;
-    top: 0;
-    left: 0;	/* top と left を明示的に示す */
+    right: 0;	/* top と left を明示的に示す */
     z-index: 100000;
 }
 #floatbox .handle {
