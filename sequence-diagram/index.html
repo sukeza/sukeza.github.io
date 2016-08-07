@@ -14,14 +14,16 @@ $(function(){
 	$(".close").on("click", function () {
 			$("#controls").toggle();
 			$(".close").text($("#controls").is(':hidden') ? "▼":"▲");
-});
+	});
 });
 </script>
 </head>
-<body>
+<body style="background-color: #eeeeee">
 <style>
 #diagram {
 	position: fixed;
+	cursor: move;
+	background-color: #ffffff;
 }
 #floatbox {
     position: fixed;
@@ -98,6 +100,18 @@ D->H:tired
 </div>
 <div id="diagram"></div>
 <script>
+$(document).ready(function(){
+	var origin = {39:{left:-10}, 37:{left:10}, 38:{top:10}, 40:{top:-10}};
+    $(document).bind('mousewheel', function(e){
+        zoom(e.originalEvent.wheelDelta > 0);
+    });
+	$(document).bind('keydown', function(e){
+		if (origin[e.keyCode]) {
+			$("#diagram").offset({left:$("#diagram").offset().left + origin[e.keyCode].left, 
+								top:$("#diagram").offset().top + origin[e.keyCode].top});
+		}
+	});
+});
 function zoom(inout){
   var size = $("#diagram").css("zoom") * 1;
   size += inout ? 0.2:-0.2;
