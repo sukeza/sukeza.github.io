@@ -111,6 +111,12 @@ $(document).ready(function(){
 								top:$("#diagram").offset().top + origin[e.keyCode].top});
 		}
 	});
+    $("#controls").bind('mousewheel', function(e){
+		e.stopPropagation();
+    });
+	$("#controls").bind('keydown', function(e){
+		e.stopPropagation();
+	});
 });
 function zoom(inout){
   var size = $("#diagram").css("zoom") * 1;
